@@ -6,9 +6,8 @@ using System.Web;
 
 namespace Warehouse.Models
 {
-    public class Product
+    public class ProductEditViewModel
     {
-        [Key]
         public int Id { get; set; }
 
         //public Product()
@@ -21,18 +20,13 @@ namespace Warehouse.Models
         public string Name { get; set; }
 
         [UIHint("Currency")] //Generic for the item, uses DisplayTemplate "Currency.cshtml". Can also be hard coded into i.e. index.cshtml
-        [Display(Name="How much to pay")]
+        [Display(Name = "How much to pay")]
         [Range(1, Int32.MaxValue, ErrorMessage = "The price must be higher than 1 SEK")]
         public int Price { get; set; }
 
-        [Display(Name="Amount in store")]
-        public int Quantity { get; set; }
         public string Category { get; set; }
 
         public string Description { get; set; }
-
-        //Test för att se utseende... Alltid formattera DateTime på ett visst sätt //Read-only-prop - alltså behöver databasen ej sparas!
-        //DisplayTemplate som heter samma sak som datatypen som jag vill hantera: DateTime.cshtml
-        public DateTime Created => DateTime.Now;
     }
 }
+

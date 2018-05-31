@@ -19,16 +19,7 @@
     </tr>
 
 @foreach (var product in Model) {
-    <tr>
-        <td>     product.Name |       @Html.DisplayFor(_ => product.Name)        </td>
-        <td>            @Html.DisplayFor(modelItem => product.Price, "Currencny")        </td>
-        <td>            @Html.DisplayFor(modelItem => product.Quantity)        </td>
-        <td>            @Html.DisplayFor(modelItem => product.Category)        </td>
-        <td>            @Html.ActionLink("Edit", "Edit", new { product.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=product.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=product.Id })
-        </td>
-    </tr>
+    @Html.Partial("_ProductRow", product)
 }
 
 </table>

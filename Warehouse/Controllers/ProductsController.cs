@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Omu.ValueInjecter;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -23,7 +24,21 @@ namespace Warehouse.Controllers
             //    //return View(db.Products); //funkar ej
             //    return View(db.Products.ToList()); //funkar - ToList() gör att frågan exekveras och är omvandlad till ista
             //}
-            return View(db.Products.ToList());
+            var list = db.Products.ToList();
+            if (ControllerContext.IsChildAction)
+            {
+                return PartialView(list);
+                //return PartialView("_ProductTable", list); //TODO: fixa partial view för produkterna!!!
+            }
+            else
+            {
+                return View(list);
+            }
+        }
+
+        public ActionResult IndexPartial()
+        {
+            return PartialView("Index", db.Products.ToList());  //Anger vyn som ska användas, istf default IndexPartial
         }
 
         // GET: Products/Details/5
@@ -77,7 +92,18 @@ namespace Warehouse.Controllers
             {
                 return HttpNotFound();
             }
-            return View(product);
+
+            var productEdit = Mapper.Map<ProductEditViewModel>(product);
+
+            //ProductEditViewModel productEdit = new ProductEditViewModel
+            //{
+            //    Id = product.Id,
+            //    Name = product.Name,
+            //    Category = product.Category,
+            //    Description = product.Description,
+            //    Price = product.Price
+            //};
+            return View(productEdit);
         }
 
         // POST: Products/Edit/5
@@ -85,15 +111,24 @@ namespace Warehouse.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Price,Quantity,Category,Description")] Product product)
+        public ActionResult Edit(ProductEditViewModel productEdit) //POCO (Entity) 
         {
-            if (ModelState.IsValid)
-            {
-                db.Entry(product).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(product);
+            if (!ModelState.IsValid) return View(productEdit);
+
+            var product = Mapper.Map<Product>(productEdit);
+            //var product = new Product
+            //{
+            //    Id = productEdit.Id,
+            //    Name = productEdit.Name,
+            //    Category = productEdit.Category,
+            //    Description = productEdit.Description,
+            //    Price = productEdit.Price
+            //};
+
+            db.Entry(product).State = EntityState.Modified;
+            db.Entry(product).Property(p => p.Quantity).IsModified = false;
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Products/Delete/5
